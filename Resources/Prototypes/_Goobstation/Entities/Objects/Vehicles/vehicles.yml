@@ -224,6 +224,17 @@
   name: wheelchair
   description: A chair with big wheels. It looks like you can move in these on your own.
   components:
+  - type: Fixtures
+    fixtures:
+        fix1:
+          shape:
+            !type:PhysShapeCircle
+            radius: 0.15
+          density: 80
+          mask:
+          - MobMask
+          layer:
+          - MobLayer
   - type: Sprite
     sprite: Objects/Vehicles/wheelchair.rsi
     layers:
@@ -242,8 +253,6 @@
         variation: 0.125
     renderOver: North, NorthEast, NorthWest
   - type: MovementSpeedModifier
-    acceleration: 10
-    friction: 10
     baseSprintSpeed: 3.5
     baseWalkSpeed: 2.5
   - type: StaticPrice
@@ -278,8 +287,6 @@
     engineRunning: true
     renderOver: North, NorthEast, NorthWest, East, West
   - type: MovementSpeedModifier
-    acceleration: 10
-    friction: 0.5
     baseSprintSpeed: 3.5
     baseWalkSpeed: 2.5
   - type: StaticPrice

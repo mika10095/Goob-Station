@@ -25,6 +25,10 @@ using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Destructible;
 using Content.Goobstation.Maths.FixedPoint;
 using Content.Shared.Damage;
+using Robust.Shared.Network;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+
 
 namespace Content.Goobstation.Shared.Vehicles;
 
@@ -36,8 +40,10 @@ public abstract partial class SharedVehicleSystem : EntitySystem
     [Dependency] private readonly SharedAppearanceSystem _appearance = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
     [Dependency] private readonly SharedBuckleSystem _buckle = default!;
+
     [Dependency] private readonly SharedMoverController _mover = default!;
     [Dependency] private readonly SharedVirtualItemSystem _virtualItem = default!;
+    [Dependency] private readonly INetManager _net = default!;
 
     public static readonly EntProtoId HornActionId = "ActionHorn";
     public static readonly EntProtoId SirenActionId = "ActionSiren";
@@ -177,25 +183,27 @@ public abstract partial class SharedVehicleSystem : EntitySystem
         }
 
         AddHorns(driver, ent);
+        Logger.Debug("This shit gets buckled in.");
     }
 
     private void OnStrapped(Entity<VehicleComponent> ent, ref StrappedEvent args)
     {
         var driver = args.Buckle.Owner;
 
-        if (!TryComp(driver, out MobMoverComponent? mover))
-            return;
-
-        if (ent.Comp.Driver != null)
-            return;
-
+        Mount(driver, ent.Owner);
         ent.Comp.Driver = driver;
         _appearance.SetData(ent.Owner, VehicleState.DrawOver, true);
-
+        Logger.Debug("This gets called buckleshit.");
+        if (!TryComp(driver, out MobMoverComponent? mover))
+            return;
+        Logger.Debug("This gets called buckleshit 1.");
+        Logger.Debug($"This gets called buckleshit {driver} {args.Buckle.Owner} {ent.Comp.Driver}.");
+        if (ent.Comp.Driver == null)
+            return;
+        Logger.Debug("This gets called buckleshit 2.");
         if (!ent.Comp.EngineRunning)
             return;
-
-        Mount(driver, ent.Owner);
+        Logger.Debug("This gets called buckleshit 3.");
     }
 
     private void OnUnstrapped(Entity<VehicleComponent> ent, ref UnstrappedEvent args)
@@ -232,8 +240,10 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void Mount(EntityUid driver, EntityUid vehicle)
     {
+        Logger.Debug("This gets called.");
         if (TryComp<AccessComponent>(vehicle, out var accessComp))
         {
+            Logger.Debug("This also gets called.");
             var accessSources = _access.FindPotentialAccessItems(driver);
             var access = _access.FindAccessTags(driver, accessSources);
 
@@ -244,17 +254,23 @@ public abstract partial class SharedVehicleSystem : EntitySystem
         }
 
         _mover.SetRelay(driver, vehicle);
+        var rider = EnsureComp<VehicleDriverComponent>(driver);
+        rider.Vehicle = vehicle;
+        Logger.Debug("This does get called but aint workin.");
     }
 
     private void Dismount(EntityUid driver, EntityUid vehicle)
     {
+        if (!RemComp<VehicleDriverComponent>(driver))
+            return;
+        Logger.Debug("This gets called. 1");
         if (!TryComp<VehicleComponent>(vehicle, out var vehicleComp))
             return;
-
+        Logger.Debug("This gets called. 2");
         if (vehicleComp.Driver != driver)
             return;
-
-        RemComp<RelayInputMoverComponent>(driver);
+        Logger.Debug("This gets called. 3");
+        //RemComp<RelayInputMoverComponent>(driver);
 
         vehicleComp.Driver = null;
 
