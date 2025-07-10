@@ -64,12 +64,20 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnInit(EntityUid uid, VehicleComponent component, ComponentInit args)
     {
+        Logger.Debug("OnInit called");
         _appearance.SetData(uid, VehicleState.Animated, component.EngineRunning);
         _appearance.SetData(uid, VehicleState.DrawOver, false);
-    }
 
+    }
+    private void TestFix(EntityUid uid)
+    {
+        if (!TryComp<InputMoverComponent>(uid, out var inputmovershit))
+            return;
+        inputmovershit.CanMove = true;
+    }
     private void OnRemove(EntityUid uid, VehicleComponent component, ComponentRemove args)
     {
+        Logger.Debug("OnRemove called");
         if (component.Driver == null)
             return;
 
@@ -80,12 +88,12 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnInsert(EntityUid uid, VehicleComponent component, ref EntInsertedIntoContainerMessage args)
     {
+        Logger.Debug("OnInsert called");
         if (HasComp<InstantActionComponent>(args.Entity))
             return;
 
         if (args.Container.ID == component.KeySlot && !component.IsBroken)
         {
-            component.EngineRunning = true;
             _appearance.SetData(uid, VehicleState.Animated, true);
 
             _ambientSound.SetAmbience(uid, true);
@@ -100,6 +108,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnEject(EntityUid uid, VehicleComponent component, ref EntRemovedFromContainerMessage args)
     {
+        Logger.Debug("OnEject called");
         if (args.Container.ID == component.KeySlot)
         {
             component.EngineRunning = false;
@@ -116,6 +125,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnHorn(EntityUid uid, VehicleComponent component, InstantActionEvent args)
     {
+        Logger.Debug("OnHorn called");
         if (args.Handled == true)
             return;
 
@@ -131,6 +141,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnSiren(EntityUid uid, VehicleComponent component, InstantActionEvent args)
     {
+        Logger.Debug("OnSiren called");
         if (args.Handled == true)
             return;
 
@@ -155,6 +166,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnStrapAttempt(Entity<VehicleComponent> ent, ref StrapAttemptEvent args)
     {
+        Logger.Debug("OnStrapAttempt called");
         var driver = args.Buckle.Owner; // i dont want to re write this shit 100 fucking times
 
         if (ent.Comp.Driver != null)
@@ -162,7 +174,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
             args.Cancelled = true;
             return;
         }
-
+        Logger.Debug("OnStrapAttempt called  1");
         if (ent.Comp.RequiredHands != 0)
         {
             for (int hands = 0; hands < ent.Comp.RequiredHands; hands++)
@@ -175,40 +187,45 @@ public abstract partial class SharedVehicleSystem : EntitySystem
                 }
             }
         }
-
+        Logger.Debug("OnStrapAttempt called  2");
         AddHorns(driver, ent);
+
     }
 
     private void OnStrapped(Entity<VehicleComponent> ent, ref StrappedEvent args)
     {
-        var driver = args.Buckle.Owner;
 
+        var driver = args.Buckle.Owner;
+        Logger.Debug($"OnStrapped called with UID: {driver}");
         if (!TryComp(driver, out MobMoverComponent? mover))
             return;
-
+         Logger.Debug("OnStrapped called 1");
         if (ent.Comp.Driver != null)
             return;
-
+         Logger.Debug("OnStrapped called 2");
         ent.Comp.Driver = driver;
         _appearance.SetData(ent.Owner, VehicleState.DrawOver, true);
 
         if (!ent.Comp.EngineRunning)
             return;
-
+        Logger.Debug("OnStrapped called 3");
         Mount(driver, ent.Owner);
+
     }
 
     private void OnUnstrapped(Entity<VehicleComponent> ent, ref UnstrappedEvent args)
     {
+        Logger.Debug("OnUnstrapped called");
         if (ent.Comp.Driver != args.Buckle.Owner)
             return;
-
+        Logger.Debug("OnUnstrapped called 1");
         Dismount(args.Buckle.Owner, ent);
         _appearance.SetData(ent.Owner, VehicleState.DrawOver, false);
     }
 
     private void OnDropped(EntityUid uid, VehicleComponent comp, VirtualItemDeletedEvent args)
     {
+        Logger.Debug("OnDropped called");
         if (comp.Driver != args.User)
             return;
 
@@ -220,6 +237,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void AddHorns(EntityUid driver, EntityUid vehicle)
     {
+        Logger.Debug("AddHorns called");
         if (!TryComp<VehicleComponent>(vehicle, out var vehicleComp))
             return;
 
@@ -232,6 +250,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void Mount(EntityUid driver, EntityUid vehicle)
     {
+        Logger.Debug("Mount called");
         if (TryComp<AccessComponent>(vehicle, out var accessComp))
         {
             var accessSources = _access.FindPotentialAccessItems(driver);
@@ -244,10 +263,12 @@ public abstract partial class SharedVehicleSystem : EntitySystem
         }
 
         _mover.SetRelay(driver, vehicle);
+        TestFix(vehicle);
     }
 
     private void Dismount(EntityUid driver, EntityUid vehicle)
     {
+        Logger.Debug("Dismount called");
         if (!TryComp<VehicleComponent>(vehicle, out var vehicleComp))
             return;
 
@@ -272,6 +293,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnItemSlotEject(EntityUid uid, VehicleComponent comp, ref ItemSlotEjectAttemptEvent args)
     {
+        Logger.Debug("OnItemSlotEject called");
         if (!comp.PreventEjectOfKey)
             return;
         if (comp.Driver == null)
@@ -286,6 +308,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnBreak(EntityUid uid, VehicleComponent component, BreakageEventArgs args)
     {
+        Logger.Debug("OnBreak called");
         component.IsBroken = true;
 
         //remove dirvers ability to drive if there is a driver
@@ -300,6 +323,7 @@ public abstract partial class SharedVehicleSystem : EntitySystem
 
     private void OnRepair(EntityUid uid, VehicleComponent component, DamageChangedEvent args)
     {
+        Logger.Debug("OnRepair called");
         if (!component.IsBroken)
             return;
         if (args.Damageable.TotalDamage == FixedPoint2.Zero)

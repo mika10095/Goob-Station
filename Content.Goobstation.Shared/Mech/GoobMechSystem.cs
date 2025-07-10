@@ -7,6 +7,7 @@ using Content.Goobstation.Common.Mech;
 using Content.Shared.NPC.Components;
 using Content.Shared.NPC.Systems;
 
+
 namespace Content.Goobstation.Shared.Mech;
 
 public sealed class SharedMechSystem : EntitySystem
