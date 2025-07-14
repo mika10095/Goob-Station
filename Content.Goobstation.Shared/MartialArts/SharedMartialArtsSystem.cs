@@ -21,6 +21,7 @@ using Content.Goobstation.Shared.Changeling.Components;
 using Content.Goobstation.Shared.MartialArts.Components;
 using Content.Goobstation.Shared.Stealth;
 using Content.Shared._Goobstation.Heretic.Components;
+using Content.Goobstation.Shared.MartialArts.Components;
 using Content.Shared._Shitmed.Medical.Surgery.Traumas.Systems;
 using Content.Shared._Shitmed.Targeting;
 using Content.Shared._White.BackStab;
@@ -368,10 +369,11 @@ public abstract partial class SharedMartialArtsSystem : EntitySystem
         if (TerminatingOrDeleted(ent))
             return;
 
-        if(TryComp<CanPerformComboComponent>(ent, out var comboComponent))
+        if (TryComp<CanPerformComboComponent>(ent, out var comboComponent))
             comboComponent.AllowedCombos.Clear();
 
         RemCompDeferred<DragonKungFuTimerComponent>(ent);
+        //RemCompDeferred<DragonKungFuStanceComponent>(ent);
     }
 
     private void CheckGrabStageOverride<T>(EntityUid uid, T component, CheckGrabOverridesEvent args)
@@ -480,7 +482,9 @@ public abstract partial class SharedMartialArtsSystem : EntitySystem
         switch (martialArtsPrototype.MartialArtsForm)
         {
             case MartialArtsForms.KungFuDragon:
+
                 EnsureComp<DragonKungFuTimerComponent>(user);
+                //EnsureComp<DragonKungFuStanceComponent>(user);
                 break;
             case MartialArtsForms.Ninjutsu:
                 EnsureComp<NinjutsuSneakAttackComponent>(user);

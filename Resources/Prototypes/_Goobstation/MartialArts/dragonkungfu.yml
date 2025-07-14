@@ -6,47 +6,100 @@
 - type: comboList
   id: KungFuDragonMoves
   combos:
-  - DragonClaw
-  - DragonTail
-  - DragonStrike
+  - DragonPunch
+  - DragonDisarm
+  - DragonGrab
 
 - type: combo
-  id: DragonClaw
-  name: Dragon Claw
+  id: DragonPunch
+  name: Dragon Punch
   martialArtsForm: KungFuDragon
   attacks:
-  - Disarm
-  - Disarm
-  event: !type:DragonClawPerformedEvent
-    sound:
-      path: /Audio/Weapons/genhit3.ogg
-  staminaDamage: 50
-
-- type: combo
-  id: DragonTail
-  name: Dragon Tail
-  martialArtsForm: KungFuDragon
-  attacks:
-  - Disarm
-  - Grab
-  - Harm
-  event: !type:DragonTailPerformedEvent
-    sound:
-      path: /Audio/Weapons/genhit2.ogg
-  extraDamage: 15
-  staminaDamage: 30
-  paralyzeTime: 6
-
-- type: combo
-  id: DragonStrike
-  name: Dragon Strike
-  martialArtsForm: KungFuDragon
-  attacks:
-  - Disarm
-  - Harm
   - Harm
   event: !type:DragonStrikePerformedEvent
     sound:
       path: /Audio/Weapons/genhit1.ogg
-  extraDamage: 40
-  paralyzeTime: 2 # Actual paralyze
+  extraDamage: 10
+  staminaDamage: 10
+
+- type: combo
+  id: DragonDisarm
+  name: Dragon Disarm
+  martialArtsForm: KungFuDragon
+  attacks:
+  - Disarm
+  event: !type:DragonClawPerformedEvent
+    sound:
+      path: /Audio/Weapons/genhit3.ogg
+  staminaDamage: 25
+
+- type: combo
+  id: DragonGrab
+  name: Dragon Grab
+  martialArtsForm: KungFuDragon
+  attacks:
+  - Grab
+  event: !type:DragonTailPerformedEvent
+    sound:
+      path: /Audio/Weapons/genhit2.ogg
+  paralyzeTime: 3
+
+- type: entity
+  id: KungFuClawStance
+  name: test
+  description: Sweeps the legs out from under a target to knock them down for a few seconds.
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite # For guidebook
+    sprite: _Goobstation/Actions/kravmaga.rsi
+    state: legsweep
+  - type: InstantAction
+    icon:
+      sprite: _Goobstation/Actions/kravmaga.rsi
+      state: legsweep
+      useDelay: 3
+    event: !type:KravMagaActionEvent { }
+  - type: KravMagaAction
+    configuration: LegSweep
+    name: Leg Sweep
+
+- type: entity
+  id: KungFuScaleStance
+  name: test2
+  description: A hard swing with the side of your hand deals some damage and disables the target's ability to speak for twenty seconds
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite # For guidebook
+    sprite: _Goobstation/Actions/kravmaga.rsi
+    state: neckchop
+  - type: InstantAction
+    icon:
+      sprite: _Goobstation/Actions/kravmaga.rsi
+      state: neckchop
+      useDelay: 3
+    event: !type:KravMagaActionEvent { }
+  - type: KravMagaAction
+    configuration: NeckChop
+    name: Neck Chop
+    effectTime: 20
+
+- type: entity
+  id: KungFuTailStance
+  name: test3
+  description: Deals 30 stamina damage and prevents breathing for ten seconds. Four of those will incapacitate a target less-than-lethally, but beware of the loss of breath you cause.
+  categories: [ HideSpawnMenu ]
+  components:
+  - type: Sprite # For guidebook
+    sprite: _Goobstation/Actions/kravmaga.rsi
+    state: lungpunch
+  - type: InstantAction
+    icon:
+      sprite: _Goobstation/Actions/kravmaga.rsi
+      state: lungpunch
+      useDelay: 3
+    event: !type:KravMagaActionEvent { }
+  - type: KravMagaAction
+    configuration: LungPunch
+    name: Lung Punch
+    staminaDamage: 40
+    effectTime: 10

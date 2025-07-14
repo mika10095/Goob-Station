@@ -104,7 +104,6 @@ public abstract partial class SharedMartialArtsSystem
         ent.Comp.SelectedMove = kravActionComp.Configuration;
         ent.Comp.SelectedMoveComp = kravActionComp;
     }
-
     private void OnMapInit(Entity<KravMagaComponent> ent, ref MapInitEvent args)
     {
         if (HasComp<MartialArtsKnowledgeComponent>(ent) || HasComp<ChangelingIdentityComponent>(ent))

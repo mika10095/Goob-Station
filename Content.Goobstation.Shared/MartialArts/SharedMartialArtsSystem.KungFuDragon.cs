@@ -12,6 +12,10 @@ using Content.Shared._Shitmed.Targeting;
 using Content.Shared.Interaction.Events;
 using Content.Shared.Movement.Pulling.Components;
 using Content.Shared.Weapons.Melee.Events;
+using Content.Goobstation.Common.MartialArts;
+using Content.Goobstation.Shared.Changeling.Components;
+using Content.Goobstation.Shared.MartialArts.Components;
+using Content.Goobstation.Shared.MartialArts.Events;
 
 namespace Content.Goobstation.Shared.MartialArts;
 
@@ -23,11 +27,19 @@ public abstract partial class SharedMartialArtsSystem
         SubscribeLocalEvent<CanPerformComboComponent, DragonTailPerformedEvent>(OnDragonTail);
         SubscribeLocalEvent<CanPerformComboComponent, DragonStrikePerformedEvent>(OnDragonStrike);
 
-        SubscribeLocalEvent<GrantKungFuDragonComponent, UseInHandEvent>(OnGrantCQCUse);
+        SubscribeLocalEvent<DragonKungFuStanceComponent, MapInitEvent>(AddActions);
 
         SubscribeLocalEvent<DragonPowerBuffComponent, AttackedEvent>(OnAttacked);
     }
-
+    private void AddActions(Entity<DragonKungFuStanceComponent> ent,  ref MapInitEvent args)
+    {
+        foreach (var actionId in ent.Comp.KungFuMoves)
+        {
+            var actions = _actions.AddAction(ent, actionId);
+            if (actions != null)
+                ent.Comp.KungFuMoveEntities.Add(actions.Value);
+        }
+    }
     private void OnAttacked(Entity<DragonPowerBuffComponent> ent, ref AttackedEvent args)
     {
         if (_hands.TryGetActiveItem(ent.Owner, out _) // Only unarmed
@@ -70,8 +82,8 @@ public abstract partial class SharedMartialArtsSystem
             || !TryUseMartialArt(ent, proto, out var target, out var downed))
             return;
 
-        if (TryComp<PullableComponent>(target, out var pullable))
-            _pulling.TryStopPull(target, pullable, ent, true);
+        //if (TryComp<PullableComponent>(target, out var pullable))
+        //    _pulling.TryStopPull(target, pullable, ent, true);
 
         if (downed)
             _stun.TryStun(target, args.DownedParalyzeTime, true); // No stunlocks
