@@ -1,0 +1,38 @@
+- type: entity
+  id: HampsterBallBase
+  name: beaver hat
+  description: 'Gentlemen?'
+  abstract: true
+  save: false
+  categories: [ HideSpawnMenu ]
+  components:
+    - type: Item
+      size: Small
+      storedRotation: -90
+    - type: RemoteControl
+      pilotWhitelist:
+          tags:
+            - ChefPilot
+    - type: Sprite
+      sprite: Clothing/Head/Hats/chefhat.rsi
+    - type: Storage
+      grid:
+      - 0,0,0,0
+    - type: UserInterface
+      interfaces:
+        enum.StorageUiKey.Key:
+          type: StorageBoundUserInterface
+    - type: ContainerContainer
+      containers:
+        storagebase: !type:Container
+
+- type: entity
+  parent: HampsterBallBase
+  id: Testing
+  name: ballohamster
+  description: 'Gentlemen?'
+  components:
+     - type: Sprite
+       sprite: Objects/Consumable/Food/meat.rsi
+       state: plain
+
