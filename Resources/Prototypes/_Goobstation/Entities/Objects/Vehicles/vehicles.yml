@@ -292,3 +292,42 @@
     materialComposition:
       Steel: 125
       Plastic: 125
+
+- type: entity
+  id: HamsterBall
+  parent: BaseVehicle
+  name: Hampster Ball
+  description: Da ball only 1 month late.
+  components:
+  - type: Sprite
+    sprite: _Goobstation/Objects/Vehicles/hamsterball.rsi
+    layers:
+    - state: vehicle
+    noRot: true
+  - type: Strap
+    position: Stand
+    blockMovement: false
+    whitelist:
+      tags:
+        - VimPilot
+  - type: Vehicle
+    requiredHands: 0
+    engineRunning: true
+    renderOver: North, NorthEast, NorthWest, East, West
+  - type: MovementSpeedModifier
+    acceleration: 10
+    friction: 0.5
+    baseSprintSpeed: 3.5
+    baseWalkSpeed: 2.5
+  - type: StaticPrice
+    price: 50
+  - type: PhysicalComposition
+    materialComposition:
+      Glass: 25
+      Plastic: 25
+  - type: Airtight
+    noAirWhenFullyAirBlocked: false
+  - type: Tag
+    tags:
+      - SpreaderIgnore
+
